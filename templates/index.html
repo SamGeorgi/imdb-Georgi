@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Movie DB GUI</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        select, input { margin-bottom: 10px; padding: 5px; }
+        table { border-collapse: collapse; width: 80%; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Movie Database Queries</h1>
+
+    <label for="query_type">Choose a query:</label>
+    <select id="query_type">
+        <option value="top_actors">Top 10 Actors/Actresses</option>
+        <option value="movies_by_person">Movies by Person</option>
+        <option value="movies_by_director">Movies by Director</option>
+    </select>
+    <br>
+
+    <label for="parameter">Name (for person/director):</label>
+    <input type="text" id="parameter" placeholder="Enter name here">
+    <br>
+
+    <button onclick="runQuery()">Run Query</button>
+
+    <div id="results"></div>
+
+    <script>
+        async function runQuery() {
+            const query_type = document.getElementById("query_type").value;
+            const parameter = document.getElementById("parameter").value;
+
+            const response = await fetch("/run_query", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ query_type, parameter })
+            });
+
+            const data = await response.json();
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = "";
+
+            if (data.success) {
+                if (data.results.length === 0) {
+                    resultsDiv.innerHTML = "<p>No results found.</p>";
+                    return;
+                }
+
+                // Create table
+                const table = document.createElement("table");
+                const header = table.insertRow();
+                Object.keys(data.results[0]).forEach(key => {
+                    const th = document.createElement("th");
+                    th.textContent = key;
+                    header.appendChild(th);
+                });
+
+                data.results.forEach(row => {
+                    const tr = table.insertRow();
+                    Object.values(row).forEach(val => {
+                        const td = tr.insertCell();
+                        td.textContent = Array.isArray(val) ? JSON.stringify(val) : val;
+                    });
+                });
+
+                resultsDiv.appendChild(table);
+            } else {
+                resultsDiv.innerHTML = `<p style="color:red;">Error: ${data.error}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
