@@ -73,9 +73,9 @@ def create_indexes():
 # Main
 if __name__ == "__main__":
     # Simply load each TSV file, assuming they exist
-    #load_tsv_to_collection(movie_id, MOVIE_TSV)
-    #load_tsv_to_collection(person_id, PERSON_TSV)
-    #load_tsv_to_collection(principals, PRINCIPALS_TSV)
+    load_tsv_to_collection(movie_id, MOVIE_TSV)
+    load_tsv_to_collection(person_id, PERSON_TSV)
+    load_tsv_to_collection(principals, PRINCIPALS_TSV)
 
     create_indexes()
     print("Data ingestion complete!")
